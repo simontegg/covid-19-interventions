@@ -59,7 +59,25 @@ limited_mvmt_i <- which(colnames(tpm) == "limited_mvmt")
 tpm$limited_mvmt <- apply(tpm, 1, limitedMvmt, limited_mvmt_i)
 
 
-print(tpm$limited_mvmt)
+# school closed
+schoolClosed <- function (row, school_closed_i) {
+  school_closed_date <- as.Date(row[school_closed_i])
+  school_closed_weak_date <- as.Date(row[school_closed_i + 1])
+
+  if ((!is.na(school_closed_date)) && (school_closed_date <= tpmControlEnd)) {
+    return(1)
+  } else if ((!is.na(school_closed_weak_date)) && (school_closed_weak_date <= tpmControlEnd)) {
+    return(0.5)
+  } else {
+    return(0)
+  }
+}
+
+school_closed_i <- which(colnames(tpm) == "school_closed") 
+tpm$school_closed <- apply(tpm, 1, schoolClosed, school_closed_i)
+
+
+print(tpm$school_closed)
 
 
 
