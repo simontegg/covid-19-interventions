@@ -6,7 +6,17 @@ interventions <- read.csv(file = "./interventions.csv", na.strings=c("","NA"))
 # constants
 tpmControlEnd <- as.Date("2020-04-17")
 
-# functions
+
+
+# Te Pūnaha Matatini model
+tpm <- subset(interventions, (!is.na(interventions$TPM_early_phase_r_eff)))
+tpm$region[tpm$region == ""] <- NA
+tpm$jurisdiction <-  paste(tpm$country_code, tpm$region, sep="_")
+tpm$jurisdiction <- gsub("_NA", "", tpm$jurisdiction)
+
+
+# closed_border
+# partial or regional or schengen border closures scored as 0.5
 closedBorder <- function (row, closed_border_i, closed_border_region_i, closed_border_schengen_i) {
   closed_border <- row[closed_border_i]
   closed_border_date <- as.Date(closed_border)
@@ -25,27 +35,31 @@ closedBorder <- function (row, closed_border_i, closed_border_region_i, closed_b
   }
 }
 
-
-
-# Te Pūnaha Matatini model
-tpm <- subset(interventions, (!is.na(interventions$TPM_early_phase_r_eff)))
-tpm$region[tpm$region == ""] <- NA
-tpm$jurisdiction <-  paste(tpm$country_code, tpm$region, sep="_")
-tpm$jurisdiction <- gsub("_NA", "", tpm$jurisdiction)
-
 closed_border_i <- which(colnames(tpm) == "closed_border") 
 closed_border_region_i <- which(colnames(tpm) == "closed_border_region")
 closed_border_schengen_i <- which(colnames(tpm) == "closed_border_schengen")
 closed_border_partial_i <- which(colnames(tpm) == "closed_border_partial")
-
-
 tpm$closed_border <- apply(tpm, 1, closedBorder, closed_border_i, closed_border_region_i, closed_border_schengen_i)
 
 
+# limited movement
+limitedMvmt <- function (row, limited_mvmt_i) {
+  limited_mvmt_date <- as.Date(row[limited_mvmt_i])
+
+  if (is.na(limited_mvmt_date)) {
+    return(0)
+  } else if (limited_mvmt_date <= tpmControlEnd) {
+    return(1)
+  } else {
+    return(0)
+  }
+}
+
+limited_mvmt_i <- which(colnames(tpm) == "limited_mvmt") 
+tpm$limited_mvmt <- apply(tpm, 1, limitedMvmt, limited_mvmt_i)
 
 
-
-print(tpm$closed_border)
+print(tpm$limited_mvmt)
 
 
 
