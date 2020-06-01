@@ -64,9 +64,9 @@ schoolClosed <- function (row, school_closed_i) {
   school_closed_date <- as.Date(row[school_closed_i])
   school_closed_weak_date <- as.Date(row[school_closed_i + 1])
 
-  if ((!is.na(school_closed_date)) && (school_closed_date <= tpmControlEnd)) {
+  if ((!is.na(school_closed_date)) & (school_closed_date <= tpmControlEnd)) {
     return(1)
-  } else if ((!is.na(school_closed_weak_date)) && (school_closed_weak_date <= tpmControlEnd)) {
+  } else if ((!is.na(school_closed_weak_date)) & (school_closed_weak_date <= tpmControlEnd)) {
     return(0.5)
   } else {
     return(0)
@@ -77,7 +77,61 @@ school_closed_i <- which(colnames(tpm) == "school_closed")
 tpm$school_closed <- apply(tpm, 1, schoolClosed, school_closed_i)
 
 
-print(tpm$school_closed)
+# social group limits
+smallGroup <- function (row, small_group_50_i) {
+  ten_date <- as.Date(row[small_group_50_i + 1])
+  less_ten_date <- as.Date(row[small_group_50_i + 2])
+  ten_within <- (!is.na(ten_date) & (ten_date <= tpmControlEnd))
+  less_ten_within <- (!is.na(less_ten_date) & (less_ten_date <= tpmControlEnd))
+
+  fifty_date <- as.Date(row[small_group_50_i])
+  hundred_date <- as.Date(row[small_group_50_i - 1])
+  two_fifty_date <- as.Date(row[small_group_50_i - 2])
+  five_hundred_date <- as.Date(row[small_group_50_i - 3])
+  thousand_date <- as.Date(row[small_group_50_i - 4])
+
+  l10 <- log(10)
+
+
+  if ((ten_within) | (less_ten_within)) {
+    return(1)
+  } else if (!is.na(fifty_date) & fifty_date <= tpmControlEnd) {
+    return(l10 / log(50))
+  } else if (!is.na(hundred_date) & hundred_date <= tpmControlEnd) {
+    return(l10 / log(100))
+  } else if (!is.na(two_fifty_date) & two_fifty_date <= tpmControlEnd) {
+    return(l10 / log(250))
+  } else if (!is.na(five_hundred_date) & five_hundred_date <= tpmControlEnd) {
+    return(l10 / log(500))
+  } else if (!is.na(thousand_date) & thousand_date <= tpmControlEnd) {
+    return(l10 / log(1000))
+  } else {
+    return(0)
+  }
+}
+
+
+# contact tracing
+contactTracing <- function (row, contact_tracing_i) {
+  contact_tracing_date <- as.Date(row[contact_tracing_i])
+  contact_tracing_weak_date <- as.Date(row[contact_tracing_i + 1])
+
+  if (!is.na(contact_tracing_date) & contact_tracing_date <= tpmControlEnd) {
+    return(1)
+  } else if (!is.na(contact_tracing_weak_date) & contact_tracing_weak_date <= tpmControlEnd) {
+    return(0.5)
+  } else {
+    return(0)
+  }
+}
+
+
+contact_tracing_i <- which(colnames(tpm) == "contact_tracing") 
+tpm$contact_tracing <- apply(tpm, 1, contactTracing, contact_tracing_i)
+
+
+
+print(tpm$contact_tracing)
 
 
 
