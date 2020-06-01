@@ -110,6 +110,9 @@ smallGroup <- function (row, small_group_50_i) {
   }
 }
 
+small_group_50_i <- which(colnames(tpm) == "social_group_limits_50") 
+tpm$group <- apply(tpm, 1, smallGroup, small_group_50_i)
+
 
 # contact tracing
 contactTracing <- function (row, contact_tracing_i) {
@@ -125,13 +128,27 @@ contactTracing <- function (row, contact_tracing_i) {
   }
 }
 
-
 contact_tracing_i <- which(colnames(tpm) == "contact_tracing") 
 tpm$contact_tracing <- apply(tpm, 1, contactTracing, contact_tracing_i)
 
 
+## symptom screeneing at border
+symptomScreening <- function (row, symptom_screening_i) {
+  symptom_screening_date <- as.Date(row[symptom_screening_i])
 
-print(tpm$contact_tracing)
+  if (!is.na(symptom_screening_date) & symptom_screening_date <= tpmControlEnd) {
+    return(1)
+  } else {
+    return(0)
+  }
+}
+
+
+symptom_screening_i <- which(colnames(tpm) == "symp_screening_border") 
+tpm$symp_screening <- apply(tpm, 1, symptomScreening, symptom_screening_i)
+
+
+print(tpm$symp_screening)
 
 
 
