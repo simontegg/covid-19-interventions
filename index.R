@@ -148,7 +148,42 @@ symptom_screening_i <- which(colnames(tpm) == "symp_screening_border")
 tpm$symp_screening <- apply(tpm, 1, symptomScreening, symptom_screening_i)
 
 
-print(tpm$symp_screening)
+## quarantine
+quarantine <- function (row, i, j, k, l) {
+  quar_trav <- as.Date(row[i])
+  quar_trav_weak <- as.Date(row[j])
+  quar_susp <- as.Date(row[k])
+  quar_confirm <- as.Date(row[l])
+
+  result <- 0
+
+  if (!is.na(quar_trav) & quar_trav <= tpmControlEnd) {
+    result <- result + 1/3
+  }
+
+  if (result == 0 & !is.na(quar_trav_weak) & quar_trav_weak <= tpmControlEnd) {
+    result <- result + 1/6
+  }
+
+  if (!is.na(quar_susp) & quar_susp <= tpmControlEnd) {
+    result <- result + 1/3
+  }
+
+  if (!is.na(quar_confirm) & quar_confirm <= tpmControlEnd) {
+    result <- result + 1/3
+  }
+
+  return (result)
+}
+
+
+quar_trav_i <- which(colnames(tpm) == "quar_trav") 
+quar_susp_i <- which(colnames(tpm) == "quar_susp") 
+quar_confirm_i <- which(colnames(tpm) == "quar_confirm") 
+
+tpm$quarantine <- apply(tpm, 1, quarantine, quar_trav_i, quar_trav_i + 1, quar_susp_i, quar_confirm_i)
+
+print(tpm$quarantine)
 
 
 
