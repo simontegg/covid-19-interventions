@@ -223,9 +223,32 @@ tpm$isolation <- apply(tpm, 1, isolation, iso_trav_i, iso_susp_i, iso_confirm_i,
 
 
 
+# household confined
+house <- function (row, i) {
+  household_confined <- as.Date(row[i])
+  household_confined_region <- as.Date(row[i + 1])
+  household_confined_recc <- as.Date(row[i + 2])
+
+  region <- (!is.na(household_confined_region) & household_confined_region <= tpmControlEnd) 
+  recc <- (!is.na(household_confined_recc) & household_confined_recc <= tpmControlEnd) 
+
+  if (!is.na(household_confined) & household_confined <= tpmControlEnd) {
+    return(1)
+  } else if (region | recc) {
+    return(0.5)
+  } else {
+    return(0)
+  }
+}
+
+household_i <- which(colnames(tpm) == "household_confined") 
 
 
-print(tpm$isolation)
+tpm$household_confined <- apply(tpm, 1, house, household_i)
+
+
+
+print(tpm$household_confined)
 
 
 
