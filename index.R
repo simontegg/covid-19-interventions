@@ -183,7 +183,49 @@ quar_confirm_i <- which(colnames(tpm) == "quar_confirm")
 
 tpm$quarantine <- apply(tpm, 1, quarantine, quar_trav_i, quar_trav_i + 1, quar_susp_i, quar_confirm_i)
 
-print(tpm$quarantine)
+
+## Home isolation
+isolation <- function (row, i, j, k, l) {
+  iso_trav <- as.Date(row[i])
+  iso_susp <- as.Date(row[j])
+  iso_confirm <- as.Date(row[k])
+  iso_contacts <- as.Date(row[l])
+
+  result <- 0
+
+  if (!is.na(iso_trav) & iso_trav <= tpmControlEnd) {
+    result <- result + 0.25
+  }
+
+  if (result == 0 & !is.na(iso_susp) & iso_susp <= tpmControlEnd) {
+    result <- result + 0.25
+  }
+
+  if (!is.na(iso_confirm) & iso_confirm <= tpmControlEnd) {
+    result <- result + 0.25
+  }
+
+  if (!is.na(iso_contacts) & iso_contacts <= tpmControlEnd) {
+    result <- result + 0.25
+  }
+
+  return (result)
+}
+
+
+iso_trav_i <- which(colnames(tpm) == "iso_trav") 
+iso_susp_i <- which(colnames(tpm) == "iso_susp") 
+iso_confirm_i <- which(colnames(tpm) == "iso_confirmed") 
+iso_contacts_i <- which(colnames(tpm) == "iso_contacts") 
+
+
+tpm$isolation <- apply(tpm, 1, isolation, iso_trav_i, iso_susp_i, iso_confirm_i, iso_contacts_i)
+
+
+
+
+
+print(tpm$isolation)
 
 
 
