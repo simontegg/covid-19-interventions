@@ -242,13 +242,67 @@ house <- function (row, i) {
 }
 
 household_i <- which(colnames(tpm) == "household_confined") 
-
-
 tpm$household_confined <- apply(tpm, 1, house, household_i)
 
+valid <- function (d) {
+  return (!is.na(d) & d <= tpmControlEnd)
+}
+
+business <- function (row, i) {
+  entertainment_closed <- as.Date(row[i])
+  entertainment_closed_region <- as.Date(row[i + 1])
+  restaurant_closed <- as.Date(row[i + 2])
+  restaurant_closed_region <- as.Date(row[i + 3])
+  store_closed <- as.Date(row[i + 4])
+  store_closed_region <- as.Date(row[i + 5])
+  office_closed <- as.Date(row[i + 6])
+  office_closed_partial <- as.Date(row[i + 7])
+  public_space_closed <- as.Date(row[i + 8])
+  public_space_closed_region <- as.Date(row[i + 9])
+
+  result <- 0
+
+  if (valid(entertainment_closed)) {
+    result <- result + 0.2
+  } else if (valid(entertainment_closed_region)) {
+    result <- result + 0.1
+  }
+  
+  if (valid(restaurant_closed)) {
+    result <- result + 0.2
+  } else if (valid(restaurant_closed_region)) {
+    result <- result + 0.1
+  }
+
+  if (valid(store_closed)) {
+    result <- result + 0.2
+  } else if (valid(store_closed_region)) {
+    result <- result + 0.1
+  }
+
+  if (valid(office_closed)) {
+    result <- result + 0.2
+  } else if (valid(office_closed_partial)) {
+    result <- result + 0.1
+  }
+
+  if (valid(public_space_closed)) {
+    result <- result + 0.2
+  } else if (valid(public_space_closed_region)) {
+    result <- result + 0.1
+  }
+
+  return(result)
+}
+
+business_i <- which(colnames(tpm) == "entertainment_closed") 
+tpm$business_closed <- apply(tpm, 1, business, business_i)
+
+# non-essential closed
 
 
-print(tpm$household_confined)
+
+print(tpm$business_closed)
 
 
 
