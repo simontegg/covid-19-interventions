@@ -244,6 +244,8 @@ house <- function (row, i) {
 household_i <- which(colnames(tpm) == "household_confined") 
 tpm$household_confined <- apply(tpm, 1, house, household_i)
 
+
+# non-essential closed
 valid <- function (d) {
   return (!is.na(d) & d <= tpmControlEnd)
 }
@@ -298,11 +300,23 @@ business <- function (row, i) {
 business_i <- which(colnames(tpm) == "entertainment_closed") 
 tpm$business_closed <- apply(tpm, 1, business, business_i)
 
-# non-essential closed
+
+# state of emergency
+emergency <- function (row, i) {
+  soe_date <- as.Date(row[i])
+
+  if (valid(soe_date)) {
+    return(1)
+  } else {
+    return(0)
+  }
+}
+
+soe_i <- which(colnames(tpm) == "state_of_emergency") 
+tpm$soe <- apply(tpm, 1, emergency, soe_i)
 
 
-
-print(tpm$business_closed)
+print(tpm$soe)
 
 
 
