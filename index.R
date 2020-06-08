@@ -359,6 +359,7 @@ tpm$nursing_homes_closed <- apply(tpm, 1, nursing, nhc_i)
 # isolation
 # household_confined 
 # business_closed
+# group
 # soe
 # masks
 # nursing_homes_closed
@@ -366,7 +367,8 @@ tpm$nursing_homes_closed <- apply(tpm, 1, nursing, nhc_i)
 
 
 
-fit <- lm(TPM_reduction_r_eff ~ closed_border + limited_mvmt + school_closed + contact_tracing + symp_screening + quarantine + isolation + household_confined + soe + business_closed + masks + nursing_homes_closed, data=tpm )
+# fit <- lm(TPM_reduction_r_eff ~ closed_border + limited_mvmt + school_closed + contact_tracing + group + symp_screening + quarantine + isolation + household_confined + soe + business_closed + masks + nursing_homes_closed, data=tpm )
+fit <- lm(TPM_late_phase_r_eff ~ closed_border + limited_mvmt + school_closed + contact_tracing + group + symp_screening + quarantine + isolation + household_confined + soe + business_closed + masks + nursing_homes_closed, data=tpm )
 
 
 summary(fit)
