@@ -1,4 +1,4 @@
-# library(tidyverse)
+library(MASS)
 
 # data
 interventions <- read.csv(file = "./interventions.csv", na.strings=c("","NA"))
@@ -371,7 +371,14 @@ tpm$nursing_homes_closed <- apply(tpm, 1, nursing, nhc_i)
 fit <- lm(TPM_late_phase_r_eff ~ closed_border + limited_mvmt + school_closed + contact_tracing + group + symp_screening + quarantine + isolation + household_confined + soe + business_closed + masks + nursing_homes_closed, data=tpm )
 
 
-summary(fit)
+step <- stepAIC(fit, direction="both")
+step$anova
+
+# step_model_reduction <- lm(TPM_reduction_r_eff ~ closed_border + contact_tracing + quarantine + isolation + household_confined + soe + business_closed + masks, data=tpm)
+step_model_late <- lm(TPM_reduction_r_eff ~ school_closed + contact_tracing + group + quarantine + isolation + household_confined + business_closed + masks, data=tpm)
+
+
+summary(step_model_late)
 
 
 
