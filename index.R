@@ -315,8 +315,42 @@ emergency <- function (row, i) {
 soe_i <- which(colnames(tpm) == "state_of_emergency") 
 tpm$soe <- apply(tpm, 1, emergency, soe_i)
 
+# masks
+masks <- function (row, i) {
+  masks_date <- as.Date(row[i])
+  masks_region_date <- as.Date(row[i + 1])
 
-print(tpm$soe)
+  if (valid(masks_date)) {
+    return(1)
+  } else if (valid(masks_region_date)) {
+    return(0.5)
+  } else {
+    return(0)
+  }
+}
+
+masks_i <- which(colnames(tpm) == "masks") 
+tpm$masks <- apply(tpm, 1, masks, masks_i)
+
+# nursing homes closed
+nursing <- function (row, i) {
+  nhc_date <- as.Date(row[i])
+  nhc_region_date <- as.Date(row[i + 1])
+
+  if (valid(nhc_date)) {
+    return(1)
+  } else if (valid(nhc_region_date)) {
+    return(0.5)
+  } else {
+    return(0)
+  }
+}
+
+nhc_i <- which(colnames(tpm) == "nursing_homes_closed") 
+tpm$nursing_homes_closed <- apply(tpm, 1, nursing, nhc_i)
+
+
+print(tpm$nursing_homes_closed)
 
 
 
